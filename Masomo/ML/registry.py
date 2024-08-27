@@ -1,3 +1,5 @@
-def load_model():
+from transformers import pipeline
 
-    pass
+# Load the model
+def load_model():
+    return pipeline("summarization", model="facebook/bart-large-cnn")
