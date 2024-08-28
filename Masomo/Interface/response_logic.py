@@ -3,6 +3,7 @@ import time
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+import numpy as np
 import streamlit as st
 
 def cleaning(prompt):
@@ -23,14 +24,22 @@ def cleaning(prompt):
     # Remove stopwords
     tokenized_sentence_cleaned = [w for w in tokenized_sentence if w not in stop_words]
 
-    # Lemmatize words
-    lemmatizer = WordNetLemmatizer()
-    lemmatized = [lemmatizer.lemmatize(word, pos="v") for word in tokenized_sentence_cleaned]
-
     # Join words into a cleaned sentence
-    cleaned_sentence = ' '.join(word for word in lemmatized)
+    cleaned_sentence = ' '.join(word for word in tokenized_sentence_cleaned)
 
     return cleaned_sentence
+
+
+def vectorize_text(cleaned_sentence, vectorizing_model):
+    """Convert text to a vector using a pre-trained model."""
+    words = cleaned_sentence.split()
+    word_vectors = [vectorizing_model[word] for word in words if word in vectorizing_model]
+
+    if word_vectors:
+        return np.mean(word_vectors, axis=0)
+    else:
+        return np.zeros(vectorizing_model.vector_size)  # Return zero vector if no words are in the model
+
 
 def response_logic(prompt):
     """Process the prompt with response logic."""
@@ -43,17 +52,6 @@ def response_logic(prompt):
 def website_content():
     with st.container():
         st.write("We couldn't understand your question... \n Maybe you want to browse through these topics:")
-        # st.link_button("Cancer", "https://www.wemasomo.com/explore/cancer")
-        # st.link_button("Contraception", "https://www.wemasomo.com/explore/contraception")
-        # st.link_button("Endometriosis", "https://www.wemasomo.com/explore/endometriosis")
-        # st.link_button("Sexually Transmitted Diseases", "https://www.wemasomo.com/explore/hiv")
-        # st.link_button("Male Specific Content", "https://www.wemasomo.com/explore/male%20specific%20content")
-        # st.link_button("Menstruation", "https://www.wemasomo.com/explore/menstruation")
-        # st.link_button("Mpox", "https://www.wemasomo.com/explore/mpox")
-        # st.link_button("Parenting", "https://www.wemasomo.com/explore/parenting")
-        # st.link_button("Pregnancy", "https://www.wemasomo.com/explore/pregnancy-guide")
-        # st.link_button("Vaccination", "https://www.wemasomo.com/explore/vaccination")
-
 
         col1, col2, col3, col4 = st.columns(4)
 
