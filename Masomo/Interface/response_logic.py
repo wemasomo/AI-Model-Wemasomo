@@ -6,15 +6,21 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import numpy as np
 import streamlit as st
-from Vectorizer.model import results, summary, website, score
+from Masomo.Vectorizer.model import new_vector
 
 def response_logic(prompt):
     """Process the prompt with response logic."""
-    nltk.download('punkt')
-    if results[0][2] > 0.2:
-        return f"{summary}\nRead more: {website}\n"
+    results = new_vector(prompt)
+    if results[0][1] > 0.2:
+        st.write(f"{results[0][0]}\nRead more: {results[0][1]}")
         with st.container():
-            st.feedback(options="thumbs", *, key=None, disabled=False, on_change=None, args=None, kwargs=None)
+            st.write("Did you find what you were looking for?")
+            st.button('no')
+            st.button('yes')
+            # if selected == 1:
+            #     st.markdown(f"Have a good read!")
+            # else:
+            #     print(f"Maybe these other articles will answer your question: \n{results[1][0]}\nRead more: {results[1][1]}\n{results[2][0]}\nRead more: {results[2][1]}")
     else:
         return website_content
 

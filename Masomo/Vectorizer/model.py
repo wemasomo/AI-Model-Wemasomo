@@ -10,14 +10,14 @@ import nltk
 nltk.download('stopwords')
 nltk.download('wordnet')
 from transformers import DistilBertTokenizer, DistilBertForSequenceClassification, Trainer, TrainingArguments
-from datasets import Dataset
+from datasets import Dataset # type: ignore
 import torch
 from sklearn.model_selection import train_test_split
 import pickle
 from sklearn.metrics.pairwise import cosine_similarity
-from Interface.main_local import prompt
 
-df = pd.read_csv('../raw_data/output_summaries.csv')
+
+
 
 # Define a custom cleaning function
 def clean_text(text):
@@ -49,38 +49,47 @@ class TextCleaner(FunctionTransformer):
         return np.array([clean_text(text) for text in X])
 
 # Create a pipeline with cleaning and vectorization
-pipeline = Pipeline([
-    ('cleaner', TextCleaner()),  # Cleaning step
-    ('vectorizer', TfidfVectorizer(max_df=0.12))  # Vectorization step
-])
 
-# Fit the pipeline and transform the 'text' column
-X = pipeline.fit_transform(df['text'])
+df = pd.read_csv('raw_data/output_summaries.csv')
 
-print("Feature names:", pipeline.named_steps['vectorizer'].get_feature_names_out())
-print("Transformed vectors:\n", X.toarray())
+def fit_model():
+    pipeline = Pipeline([
+        ('cleaner', TextCleaner()),  # Cleaning step
+        ('vectorizer', TfidfVectorizer(max_df=0.12))  # Vectorization step
+    ])
 
-# Save the pipeline to a file
-filename = 'text_processing_pipeline.sav'
-pickle.dump(pipeline, open(filename, 'wb'))
+    # Fit the pipeline and transform the 'text' column
+    X = pipeline.fit_transform(df['text'])
 
-# Load the saved pipeline
-loaded_pipeline = pickle.load(open('text_processing_pipeline.sav', 'rb'))
+    print("Feature names:", pipeline.named_steps['vectorizer'].get_feature_names_out())
+    print("Transformed vectors:\n", X.toarray())
 
-# Now you can use the loaded_pipeline to transform new data
-new_text = prompt
-new_vectors = loaded_pipeline.transform(new_text)
+    # Save the pipeline to a file
+    filename = 'text_processing_pipeline.sav'
+    pickle.dump(pipeline, open(filename, 'wb'))
+    return X
 
-# Calculate cosine similarity between new_text and all other texts
-similarity_scores = cosine_similarity(new_vectors, X)
+def new_vector(prompt):
+    # Load the saved pipeline
+    loaded_pipeline = pickle.load(open('text_processing_pipeline.sav', 'rb'))
 
-# Get the indices of the top 3 most similar texts
-top_indices = similarity_scores.argsort()[0][-3:][::-1]
+    # Now you can use the loaded_pipeline to transform new data
+    new_text = prompt
+    new_vectors = loaded_pipeline.transform([new_text])
 
-# Get the summaries of the top 3 most similar texts and their scores
-results = []
-for index in top_indices:
-  summary = df['summary'][index]
-  website = df['link'][index]
-  score = similarity_scores[0][index]
-  results.append((summary, website, score))
+    # Calculate cosine similarity between new_text and all other texts
+    X=fit_model()
+    similarity_scores = cosine_similarity(new_vectors, X)
+
+    # Get the indices of the top 3 most similar texts
+    top_indices = similarity_scores.argsort()[0][-3:][::-1]
+
+    # Get the summaries of the top 3 most similar texts and their scores
+    results = []
+
+    for index in top_indices:
+        summary = df['summary'][index]
+        #   website = df['link'][index]
+        score = similarity_scores[0][index]
+        results.append((summary, score))
+    return results
