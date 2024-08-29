@@ -10,7 +10,7 @@ if "messages" not in st.session_state:
 
 # Start chat with Hello
 if not st.session_state.messages:
-    st.session_state.messages.append({"role": "assistant", "content": "Hello! \n What do you want to talk about today"})
+    st.session_state.messages.append({"role": "assistant", "content": "Hello! \n What do you want to talk about today?"})
 
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
@@ -39,18 +39,6 @@ if prompt := st.chat_input("What do you want to know more about?"):
         st.session_state.messages.append({"role": "assistant", "content": response_text})
 
 
-
-# st.connection("pets_db", type="sql")
-# conn = st.connection("sql")
-# conn = st.connection("snowflake")
-
-# class MyConnection(BaseConnection[myconn.MyConnection]):
-#     def _connect(self, **kwargs) -> MyConnection:
-#         return myconn.connect(**self._secrets, **kwargs)
-#     def query(self, query):
-#         return self._instance.query(query)
-
-####################################################
 
 # # Replace any single element.
 # element = st.empty()
