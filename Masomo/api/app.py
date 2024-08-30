@@ -1,21 +1,41 @@
-
-from fastapi import FastAPI, Form
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from Masomo.model.summarizer import Summarizer
+from Masomo.model.qa_model import QuestionAnsweringModel
 
 app = FastAPI()
 summarizer = Summarizer()
+qa_model = QuestionAnsweringModel()
 
-#app.state.model = model
+@app.on_event("startup")
+def load_model():
+    app.state.summarizer = Summarizer()
+    app.state.qa_model = QuestionAnsweringModel()
 
 class TextInput(BaseModel):
     content: str
 
+class QuestionRequest(BaseModel):
+    text: str
+    question: str
+
 @app.get('/')
 def index():
-    return {'greeting': 'wellcome to WeMasomo'}
+ return {'greeting': 'wellcome to WeMasomo'}
 
-@app.post("/summarize")
-def summarize(content: str = Form(...)):
-    summary = summarizer.summarize_text(content)
-    return {"summary": summary}
+
+@app.get("/summarize")
+def summarize_text(query):
+    try:
+        summary = summarizer.summarize_text(query)
+        return {"summary": summary}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/answer")
+def answer_question(question, text):
+    try:
+        answer = qa_model.answer_question(question, text)
+        return {"answer": answer}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
