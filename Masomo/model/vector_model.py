@@ -78,7 +78,7 @@ def new_vector(prompt):
     new_vectors = loaded_pipeline.transform([new_text])
 
     # Calculate cosine similarity between new_text and all other texts
-    X=fit_model()
+    X = fit_model()
     similarity_scores = cosine_similarity(new_vectors, X)
 
     # Get the indices of the top 3 most similar texts

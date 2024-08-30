@@ -6,7 +6,7 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import numpy as np
 import streamlit as st
-from Masomo.Vectorizer.model import new_vector
+from Masomo.model.vector_model import new_vector
 
 def response_logic(prompt):
     """Process the prompt with response logic."""
