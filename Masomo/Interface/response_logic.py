@@ -11,8 +11,6 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-
-
 qa_model = QuestionAnsweringModel()
 df = pd.read_csv('raw_data/database.csv')
 vectorizer = TfidfVectorizer()
@@ -50,22 +48,30 @@ def find_most_relevant_text(prompt, text_vectors, texts):
     most_similar_index = similarity_scores.argmax()
     return texts.iloc[most_similar_index]
 
-def get_index(prompt, text_vectors, texts):
+def get_index(prompt, text_vectors):
     question_vec = vectorizer.transform([prompt])
     similarity_scores = cosine_similarity(question_vec, text_vectors).flatten()
     most_similar_index = similarity_scores.argmax()
     return most_similar_index
 
 # Streamed response emulator
-def response_generator(prompt):
+def response_generator(prompt, text_vectors, df):
     """Generate a response in a streamed manner."""
-    relevant_text = qa_model.find_most_relevant_text(prompt, df)
+    # Get the most similar index
+    most_similar_index = get_index(prompt, text_vectors)
+
+    # Get the most relevant text using the index
+    relevant_text = df.iloc[most_similar_index]['text']
+
+    # Generate the response
     response = qa_model.answer_question(prompt, relevant_text)
 
     if response is not None:
         st.write(f"{df['summary'].iloc[most_similar_index]}")
     else:
         return website_content()
+
+
 
 
     # If the response is not a string, handle it differently
