@@ -12,12 +12,6 @@ def load_model():
     app.state.summarizer = Summarizer()
     app.state.qa_model = QuestionAnsweringModel()
 
-class TextInput(BaseModel):
-    content: str
-
-class QuestionRequest(BaseModel):
-    text: str
-    question: str
 
 @app.get('/')
 def index():
@@ -32,10 +26,10 @@ def summarize_text(query):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/answer")
-def answer_question(question, text):
-    try:
-        answer = qa_model.answer_question(question, text)
-        return {"answer": answer}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+#@app.get("/answer")
+#def answer_question(question, text):
+#    try:
+#        answer = qa_model.answer_question(question, text)
+#        return {"answer": answer}
+#    except Exception as e:
+#        raise HTTPException(status_code=500, detail=str(e))

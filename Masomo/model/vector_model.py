@@ -50,7 +50,7 @@ class TextCleaner(FunctionTransformer):
 
 # Create a pipeline with cleaning and vectorization
 
-df = pd.read_csv('raw_data/output_summaries.csv')
+df = pd.read_csv('Masomo/raw_data/output_summaries_3.csv')
 
 def fit_model():
     pipeline = Pipeline([
