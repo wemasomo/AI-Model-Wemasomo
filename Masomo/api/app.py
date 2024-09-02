@@ -4,6 +4,7 @@ from Masomo.model.summarizer import Summarizer
 app = FastAPI()
 summarizer = Summarizer()
 
+
 @app.on_event("startup")
 def load_model():
     app.state.summarizer = Summarizer()
