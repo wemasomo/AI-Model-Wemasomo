@@ -6,23 +6,16 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import numpy as np
 import streamlit as st
-from Masomo.model.vector_model import new_vector
+from Masomo.model.qa_model import QuestionAnsweringModel
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
-def response_logic(prompt):
-    """Process the prompt with response logic."""
-    results = new_vector(prompt)
-    if results[0][1] > 0.2:
-        st.write(f"{results[0][0]}\nRead more: {results[0][1]}")
-        with st.container():
-            st.write("Did you find what you were looking for?")
-            st.button('no')
-            st.button('yes')
-            # if selected == 1:
-            #     st.markdown(f"Have a good read!")
-            # else:
-            #     print(f"Maybe these other articles will answer your question: \n{results[1][0]}\nRead more: {results[1][1]}\n{results[2][0]}\nRead more: {results[2][1]}")
-    else:
-        return website_content
+
+
+qa_model = QuestionAnsweringModel()
+df = pd.read_csv('raw_data/database.csv')
+vectorizer = TfidfVectorizer()
 
 # Returns website pages
 def website_content():
@@ -50,10 +43,30 @@ def website_content():
             st.link_button("Sexually Transmitted Diseases", "https://www.wemasomo.com/explore/hiv")
             st.link_button("Parenting", "https://www.wemasomo.com/explore/parenting")
 
+
+def find_most_relevant_text(prompt, text_vectors, texts):
+    question_vec = vectorizer.transform([prompt])
+    similarity_scores = cosine_similarity(question_vec, text_vectors).flatten()
+    most_similar_index = similarity_scores.argmax()
+    return texts.iloc[most_similar_index]
+
+def get_index(prompt, text_vectors, texts):
+    question_vec = vectorizer.transform([prompt])
+    similarity_scores = cosine_similarity(question_vec, text_vectors).flatten()
+    most_similar_index = similarity_scores.argmax()
+    return most_similar_index
+
 # Streamed response emulator
 def response_generator(prompt):
     """Generate a response in a streamed manner."""
-    response = response_logic(prompt)
+    relevant_text = qa_model.find_most_relevant_text(prompt, df)
+    response = qa_model.answer_question(prompt, relevant_text)
+
+    if response is not None:
+        st.write(f"{df['summary'].iloc[most_similar_index]}")
+    else:
+        return website_content()
+
 
     # If the response is not a string, handle it differently
     if isinstance(response, str):
@@ -98,3 +111,22 @@ def response_generator(prompt):
 #         return fake_dict['STI']
 #     else:
 #         return website_content()
+
+
+# _________________________________________________________________________________________________________
+
+# def response_logic(prompt):
+#     """Process the prompt with response logic."""
+#     results = qa_model.answer_question(prompt)
+#     # if results[0][1] > 0.2:
+#     #     st.write(f"{results[0][0]}\nRead more: {results[0][1]}")
+#     #     # with st.container():
+#     #     #     st.write("Did you find what you were looking for?")
+#     #     #     st.button('no')
+    #     #     st.button('yes')
+    #         # if selected == 1:
+    #         #     st.markdown(f"Have a good read!")
+    #         # else:
+    #         #     print(f"Maybe these other articles will answer your question: \n{results[1][0]}\nRead more: {results[1][1]}\n{results[2][0]}\nRead more: {results[2][1]}")
+    # else:
+    #     return website_content

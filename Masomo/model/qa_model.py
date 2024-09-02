@@ -7,15 +7,15 @@ class QuestionAnsweringModel:
     def __init__(self, model_name="deepset/roberta-base-squad2"):
         self.qa_pipeline = pipeline("question-answering", model=model_name)
 
-    def find_most_relevant_text(self, question, df):
-        texts = df['Text'].tolist()
-        texts.append(question)
+    def find_most_relevant_text(self, prompt, df):
+        texts = df['text'].tolist()
+        texts.append(prompt)
         vectorizer = TfidfVectorizer().fit_transform(texts)
         vectors = vectorizer.toarray()
         cosine_similarities = cosine_similarity([vectors[-1]], vectors[:-1]).flatten()
         best_index = cosine_similarities.argmax()
-        return df['Text'].iloc[best_index]
+        return df['text'].iloc[best_index]
 
-    def answer_question(self, question, context):
-        result = self.qa_pipeline(question=question, context=context)
+    def answer_question(self, prompt, context):
+        result = self.qa_pipeline(question=prompt, context=context)
         return result['answer']
