@@ -1,0 +1,15 @@
+import streamlit as st
+import requests
+
+# API base URL
+API_URL = "http://localhost:8000"  # Update if using a different host or port
+# Application title
+st.title("We!Masomo Health Assistant")
+# Description
+st.write("""
+Welcome to the We!Masomo Health Assistant! This tool helps you understand and learn more about sexual health by providing concise summaries of the information you input.
+**Summarize Text:** Get a quick summary of any provided text.
+Enter your text below to get started.
+""")
+# User input for the text
+text = st.text_area("Enter Your Text Here", "Type or paste your text about sexual health here.")
