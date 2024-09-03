@@ -1,6 +1,6 @@
 streamlit
 datasets
-
+nltk
 wheel
 nbresult
 colorama

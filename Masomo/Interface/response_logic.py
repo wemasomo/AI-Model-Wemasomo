@@ -72,8 +72,6 @@ def response_generator(prompt, text_vectors, df):
         return website_content()
 
 
-
-
     # If the response is not a string, handle it differently
     if isinstance(response, str):
         for word in response.split():
