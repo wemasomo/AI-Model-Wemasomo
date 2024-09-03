@@ -1,3 +1,4 @@
+# Import necessary libraries
 import string
 import time
 import nltk
@@ -5,42 +6,20 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import numpy as np
-import streamlit as st
-from Masomo.model.qa_model import QuestionAnsweringModel
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from fastapi import FastAPI, HTTPException
+from Masomo.model.qa_model import QuestionAnsweringModel
 
+# Initialize FastAPI
+app = FastAPI()
+
+# Load the QA model and data
 qa_model = QuestionAnsweringModel()
 df = pd.read_csv('raw_data/database.csv')
 vectorizer = TfidfVectorizer()
-
-# Returns website pages
-def website_content():
-    with st.container():
-        st.divider()
-        st.write("We couldn't understand your question... \n Maybe you want to browse through these topics:")
-
-        col1, col2, col3, col4 = st.columns(4)
-
-        with col1:
-            st.link_button("Cancer", "https://www.wemasomo.com/explore/cancer")
-            st.link_button("Male Specific Content", "https://www.wemasomo.com/explore/male%20specific%20content")
-            st.link_button("Pregnancy", "https://www.wemasomo.com/explore/pregnancy-guide")
-
-        with col2:
-            st.link_button("Contraception", "https://www.wemasomo.com/explore/contraception")
-            st.link_button("Menstruation", "https://www.wemasomo.com/explore/menstruation")
-            st.link_button("Vaccination", "https://www.wemasomo.com/explore/vaccination")
-
-        with col3:
-            st.link_button("Endometriosis", "https://www.wemasomo.com/explore/endometriosis")
-            st.link_button("Mpox", "https://www.wemasomo.com/explore/mpox")
-
-        with col4:
-            st.link_button("Sexually Transmitted Diseases", "https://www.wemasomo.com/explore/hiv")
-            st.link_button("Parenting", "https://www.wemasomo.com/explore/parenting")
-
+text_vectors = vectorizer.fit_transform(df['text'])  # Fit the vectorizer on the text data
 
 def find_most_relevant_text(prompt, text_vectors, texts):
     question_vec = vectorizer.transform([prompt])
@@ -54,32 +33,9 @@ def get_index(prompt, text_vectors):
     most_similar_index = similarity_scores.argmax()
     return most_similar_index
 
-# Streamed response emulator
-def response_generator(prompt, text_vectors, df):
-    """Generate a response in a streamed manner."""
-    # Get the most similar index
-    most_similar_index = get_index(prompt, text_vectors)
-
-    # Get the most relevant text using the index
-    relevant_text = df.iloc[most_similar_index]['text']
-
-    # Generate the response
-    response = qa_model.answer_question(prompt, relevant_text)
-
-    if response is not None:
-        st.write(f"{df['summary'].iloc[most_similar_index]}")
-    else:
-        return website_content()
 
 
-    # If the response is not a string, handle it differently
-    if isinstance(response, str):
-        for word in response.split():
-            yield word + " "
-            time.sleep(0.05)
-    else:
-        # Handle cases where response is not a string
-        return response
+# Optional: Add more endpoints as needed
 
 
 # def question_keyword():
