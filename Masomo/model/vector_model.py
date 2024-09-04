@@ -11,7 +11,6 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 from transformers import DistilBertTokenizer, DistilBertForSequenceClassification, Trainer, TrainingArguments
 from datasets import Dataset # type: ignore
-import torch
 from sklearn.model_selection import train_test_split
 import pickle
 from sklearn.metrics.pairwise import cosine_similarity
