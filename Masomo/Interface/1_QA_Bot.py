@@ -8,95 +8,147 @@ from nltk.stem import WordNetLemmatizer
 from streamlit_option_menu import option_menu # type: ignore
 import requests
 
+
 st.title("We!Masomo Health Assistant")
 st.markdown('\U0001F4AC Q&A Bot: ask health questions <br> \U0001F4DA Text Simplifier: make your health texts shorter', unsafe_allow_html=True)
 
+CSS = """
+h1 {
+    color: red;
+}
+.stApp {
+    # background-image: url(https://avatars1.githubusercontent.com/u/9978111?v=4);
+    background-size: cover;
+}
+.stVerticalBlockBorderWrapper{
+    
+}
 
-def main():
-    selected = option_menu(
-        menu_title=None,  # No menu title
-        options=["Q&A Bot", "Text Simplifier"],  # Menu options
-        icons=["chat-heart", "highlighter"],  # Icons for the options
-        menu_icon="emoji-smile",  # Icon for the menu
-        default_index=0,  # Default selected option
-        orientation="horizontal",  # Horizontal orientation
-        styles={
-            "icon": {"color": "#1B4C9A", "font-size": "18px"},
-            "nav-link": {
-                "font-size": "16px",
-                "text-align": "center",
-                "--hover-color": "#FFD8CC",
-            },
-            "nav-link-selected": {"background-color": "#EA5B29"},
-        }
-    )
+#tabs-bui1-tab-0 {
 
-    # Conditional rendering based on selected option
-    if selected == "Q&A Bot":
+}
+"""
 
-        # Initialize chat history
-        if "messages" not in st.session_state:
-            st.session_state.messages = []
+# st.write(f'<style>{CSS}</style>', unsafe_allow_html=True)
 
-        # Start chat with Hello
-        if not st.session_state.messages:
-            st.session_state.messages.append({"role": "assistant", "content": "Hello! \U0001F44B What do you want to talk about today?"})
+# selected = option_menu(
+#     menu_title=None,  # No menu title
+#     options=["Q&A Bot", "Text Simplifier"],  # Menu options
+#     icons=["chat-heart", "highlighter"],  # Icons for the options
+#     menu_icon="emoji-smile",  # Icon for the menu
+#     default_index=0,  # Default selected option
+#     orientation="horizontal",  # Horizontal orientation
+#     styles={
+#         "icon": {"color": "#1B4C9A", "font-size": "18px"},
+#         "nav-link": {
+#             "font-size": "16px",
+#             "text-align": "center",
+#             "--hover-color": "#FFD8CC",
+#         },
+#         "nav-link-selected": {"background-color": "#EA5B29"},
+#     }
+# )
 
-        # Display chat messages from history on app rerun
-        for message in st.session_state.messages:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
 
-        # Accept user input
-        if prompt := st.chat_input("What do you want to know more about?"):
-            # Add user message to chat history
-            st.session_state.messages.append({"role": "user", "content": prompt})
+tab1, tab2 = st.tabs(["Q&A Bot", "Shortener"])
 
-            # Display user message in chat message container
-            with st.chat_message("user"):
-                st.markdown(prompt)
+# Conditional rendering based on selected option
+with tab1:
+    messages = st.container(border=True)
+    # API base URL
+    API_URL = "http://localhost:8000"  # Update when using a different host
 
-            # Generate and display assistant response in chat message container
-            with st.chat_message("assistant"):
-                from Masomo.Interface.response_logic import response_generator
-                response_placeholder = st.empty()  # Create a placeholder for the response
-                response = response_generator(prompt)
-                response_text = ""
-                for word in response:
-                    response_text += word
-                    response_placeholder.markdown(response_text)
-                    time.sleep(0.05)  # Simulate streaming delay
+    # # Initialize chat history
+    # if "messages" not in st.session_state:
+    #     st.session_state.messages = []
 
-                st.session_state.messages.append({"role": "assistant", "content": response_text})
+    # # Start chat with Hello
+    # if not st.session_state.messages:
+
+
+    # # Display chat messages from history on app rerun
+    # for message in st.session_state.messages:
+    #     with st.chat_message(message["role"]):
+    #         st.markdown(message["content"])
+
+
+    messages.chat_message("assistant").write("Hello! \U0001F44B What do you want to talk about today?")
+    # Accept user input
+    if prompt := st.chat_input("What do you want to know more about?"):
+        messages.chat_message("user").write(prompt)
+        # Add user message to chat history
+        # st.session_state.messages.append({"role": "user", "content": prompt})
+
+        # # Display user message in chat message container
+        # with st.chat_message("user"):
+        #     st.markdown(prompt)
+
+        # Generate and display assistant response in chat message container
+        # with st.chat_message("assistant"):
+        # response_placeholder = st.empty()  # Create a placeholder for the response
+        response = requests.post(f"{API_URL}/qa",  json={"prompt": prompt})
+            # if response.ok:
+            #     answer = response.json().get("answer")
+
+
+            ######## IS THIS WHAT I'M SUPPOSED TO DO??? ########
+        if response.json().get('score') > 0.2:
+            messages.chat_message("assistant").write(response.json())
+        else:
+            with messages.chat_message("assistant").container():
+                st.write("We couldn't understand your question... \n Maybe you want to browse through these topics:")
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.link_button("Cancer", "https://www.wemasomo.com/explore/cancer", use_container_width=True)
+                    st.link_button("Contraception", "https://www.wemasomo.com/explore/contraception", use_container_width=True)
+                # with col2:
+                    st.link_button("Endometriosis", "https://www.wemasomo.com/explore/endometriosis", use_container_width=True)
+                    st.link_button("Sexually Transmitted Diseases", "https://www.wemasomo.com/explore/hiv", use_container_width=True)
+                    st.link_button("Male Specific Content", "https://www.wemasomo.com/explore/male%20specific%20content", use_container_width=True)
+                with col2:
+                    st.link_button("Menstruation", "https://www.wemasomo.com/explore/menstruation", use_container_width=True)
+                    st.link_button("Mpox", "https://www.wemasomo.com/explore/mpox", use_container_width=True)
+                    st.link_button("Parenting", "https://www.wemasomo.com/explore/parenting", use_container_width=True)
+                    st.link_button("Pregnancy", "https://www.wemasomo.com/explore/pregnancy-guide", use_container_width=True)
+                    st.link_button("Vaccination", "https://www.wemasomo.com/explore/vaccination", use_container_width=True)
+
+
+            # response = qa_endpoint(prompt)
+            # response_text = ""
+            # for word in response:
+            #     response_text += word
+            #     response_placeholder.markdown(response_text)
+            #     time.sleep(0.05)  # Simulate streaming delay
+
+            # st.session_state.messages.append({"role": "assistant", "content": response})
 
 #################################################################################################
 
-    elif selected == "Text Simplifier":
-        # API base URL
-        API_URL = "http://localhost:8000"  # Update when using a different host
+with tab2:
+    summary_box = st.container()
 
-        # Description
-        st.write("""
-        This tool helps you understand and learn more about sexual health by providing concise summaries of the information you input.
-        """)
+    # API base URL
+    API_URL = "http://localhost:8000"  # Update when using a different host
 
-        # User input for the text
-        text = st.text_area("Enter Your Text Here")
+    # Description
+    summary_box.write("""
+    This tool helps you understand and learn more about sexual health by providing concise summaries of the information you input.
+    """)
 
-        if text:
-            if st.button("Get Summary"):
-                # Send a GET request to the summarization endpoint
-                response = requests.get(f"{API_URL}/summarize", params={"query": text})
-                if response.ok:
-                    summary = response.json().get("summary")
-                    st.write("**Summary:**", summary)
-                else:
-                    st.write("Error retrieving summary.")
-        else:
-            st.markdown("Please enter some text to get a summary.")
+    # User input for the text
+    text = summary_box.text_area("Enter Your Text Here")
 
-if __name__ == "__main__":
-    main()
+    if text:
+        if summary_box.button("Get Summary"):
+            # Send a GET request to the summarization endpoint
+            response = requests.get(f"{API_URL}/summarize", params={"query": text})
+            if response.ok:
+                summary = response.json().get("summary")
+                summary_box.write(summary)
+            else:
+                summary_box.write("Error retrieving summary.")
+    else:
+        summary_box.markdown("Please enter some text to get a summary.")
 
 
 ####################################################################################3
