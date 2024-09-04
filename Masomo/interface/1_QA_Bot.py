@@ -5,14 +5,60 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from streamlit_option_menu import option_menu # type: ignore
 import requests
 
+logo_url = "https://www.wemasomo.com/_next/image?url=%2Fimg%2Flogo-text.png&w=384&q=75"
 
+st.image(logo_url, use_column_width=False)
 st.title("We!Masomo Health Assistant")
-st.markdown('\U0001F4AC Q&A Bot: ask health questions <br> \U0001F4DA Text Simplifier: make your health texts shorter', unsafe_allow_html=True)
+#st.markdown('\U0001F4AC Q&A Bot: ask health questions <br> \U0001F4DA Text Simplifier: make your health texts shorter', unsafe_allow_html=True)
+
+if 'show_welcome' not in st.session_state:
+    st.session_state.show_welcome = True
+
+@st.dialog("Dialog title")
+def show_dialog():
+    st.write("whater")
+    agree = st.checkbox("agree with terms")
+    if agree:
+        if st.button("close"):
+            st.session_state.show_welcome = False
+            st.rerun()
+
+if st.session_state.show_welcome:
+    show_dialog()
+
+    
+st.markdown("""
+            <div class="header">
+            </div>
+            """,
+            unsafe_allow_html=True)
+
+st.markdown(
+            """
+            <div class="welcome-text">
+                This tool provides two main features:
+                <br><strong>\U0001F4AC Q&A Bot:</strong> Ask health-related questions and receive instant answers.
+                <br><strong>\U0001F4DA Text Simplifier:</strong> Simplify complex health texts for easier understanding.
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 CSS = """
+
+# .welcome-text {
+#     font-size: 18px;
+#     margin-bottom: 20px;
+#     color: #333;
+# }
+
+
+div[aria-label="dialog"]>button[aria-label="Close"] {
+        display: none;
+}
+
 .stApp {
     background-color: #FFD8CC;
 }
@@ -26,18 +72,28 @@ CSS = """
     font-family: "Source Sans Pro", sans-serif;
 }
 
-.st-emotion-cache-4uzi61 {
-    background-color: white
+.st-emotion-cache-4oy321 {
+    background-color: #FFD8CC50;
 }
 
 .stChatMessage {
-    background-color: #FFD8CC
+    padding-right: 1em;
 }
 
 
-#tabs-bui1-tab-0 {
-
+.st-emotion-cache-4uzi61 {
+    background: white;
+    border: none;
 }
+
+
+.st-emotion-cache-bho8sy {
+    background-color: #1B4C9A;
+
+.st-emotion-cache-1ghhuty {
+    background-color: #EA5B29;
+}
+
 """
 
 st.write(f'<style>{CSS}</style>', unsafe_allow_html=True)
