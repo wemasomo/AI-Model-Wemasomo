@@ -17,7 +17,7 @@ app = FastAPI()
 
 # Load the QA model and data
 qa_model = QuestionAnsweringModel()
-df = pd.read_csv('raw_data/database.csv')
+df = pd.read_csv('database.csv')
 vectorizer = TfidfVectorizer()
 text_vectors = vectorizer.fit_transform(df['text'])  # Fit the vectorizer on the text data
 
