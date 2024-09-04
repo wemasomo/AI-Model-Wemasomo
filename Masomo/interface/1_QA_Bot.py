@@ -28,7 +28,7 @@ def show_dialog():
 if st.session_state.show_welcome:
     show_dialog()
 
-    
+
 st.markdown("""
             <div class="header">
             </div>
@@ -98,7 +98,7 @@ div[aria-label="dialog"]>button[aria-label="Close"] {
 
 st.write(f'<style>{CSS}</style>', unsafe_allow_html=True)
 
-tab1, tab2 = st.tabs(["Q&A Bot", "Shortener"])
+tab1, tab2 = st.tabs(["Q&A Bot", "Simplifier"])
 
 # Conditional rendering based on selected option
 with tab1:
@@ -127,7 +127,19 @@ with tab1:
 
             ######## IS THIS WHAT I'M SUPPOSED TO DO??? ########
         if response.json().get('score') > 0.2:
-            messages.chat_message("assistant").write(response.json())
+            response_data = response.json()
+
+            # Extract the values from the JSON response
+            response_text = response_data.get('response', '')
+            summary_text = response_data.get('summary', '')
+            link_text = response_data.get('link', '')
+
+            # Combine the extracted values into a single string with each on a new line
+            combined_text = f"**Short answer:** {response_text}  \n**On this topic:** {summary_text}  \n[**More info**]({link_text})"
+
+            # Display the combined text in the chat interface
+            messages.chat_message("assistant").markdown(combined_text, unsafe_allow_html=True)
+
         else:
             with messages.chat_message("assistant").container():
                 st.write("We couldn't understand your question... \n Maybe you want to browse through these topics:")
@@ -162,7 +174,7 @@ with tab2:
     summary_box = st.container()
 
     # API base URL
-    API_URL = "http://localhost:8000"  # Update when using a different host
+    API_URL = "https://wemasomo-app-963445830256.europe-west10.run.app"  # Update when using a different host
 
     # Description
     summary_box.write("""
@@ -170,17 +182,18 @@ with tab2:
     """)
 
     # User input for the text
-    text = summary_box.text_area("Enter Your Text Here")
+text = summary_box.text_area("Enter your text here")
 
+# Display the "Get Summary" button
+if summary_box.button("Get Summary"):
     if text:
-        if summary_box.button("Get Summary"):
-            # Send a GET request to the summarization endpoint
-            response = requests.get(f"{API_URL}/summarize", params={"query": text})
-            if response.ok:
-                summary = response.json().get("summary")
-                summary_box.write(summary)
-            else:
-                summary_box.write("Error retrieving summary.")
+        # Send a GET request to the summarization endpoint
+        response = requests.get(f"{API_URL}/summarize", params={"query": text})
+        if response.ok:
+            summary = response.json().get("summary")
+            summary_box.write(summary)
+        else:
+            summary_box.write("Error retrieving summary.")
     else:
         summary_box.markdown("Please enter some text to get a summary.")
 
