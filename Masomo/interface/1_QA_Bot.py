@@ -7,11 +7,61 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import requests
 
+logo_url = "https://www.wemasomo.com/_next/image?url=%2Fimg%2Flogo-text.png&w=384&q=75"
 
-st.title("We!Masomo Health Assistant")
-st.markdown('\U0001F4AC Q&A Bot: ask any sexual health related questions <br> \U0001F4DA Text Simplifier: make your texts shorter', unsafe_allow_html=True)
+if 'show_welcome' not in st.session_state:
+    st.session_state.show_welcome = True
+
+@st.dialog("Terms and Conditions")
+def show_dialog():
+    agree = st.checkbox("By checking this, you agree to our [Terms and Conditions](https://www.wemasomo.com/general-terms-and-conditions).")
+    if agree:
+        if st.button("Agree and continue"):
+            st.session_state.show_welcome = False
+            st.rerun()
+
+if st.session_state.show_welcome:
+    show_dialog()
+
+
+st.markdown("""
+    <div class="header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="flex: 1; text-align: left;">
+            <h1>Health Assistant</h1>
+            <h4>by We!Masomo</h4>
+        </div>
+        <div>
+            <img src="https://www.wemasomo.com/img/logo-text.png" style="width: auto; height: 160px;"/>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+
+st.markdown(
+            """
+            <div class="welcome-text">
+                This tool provides two main features:
+                <br><strong>\U0001F4AC Q&A Bot:</strong> Ask health-related questions and receive instant answers.
+                <br><strong>\U0001F4DA Text Simplifier:</strong> Simplify complex health texts for easier understanding.
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 CSS = """
+
+# .welcome-text {
+#     font-size: 18px;
+#     margin-bottom: 20px;
+#     color: #333;
+# }
+
+
+div[aria-label="dialog"]>button[aria-label="Close"] {
+        display: none;
+}
+
 .stApp {
     background-color: #FFD8CC;
 }
@@ -25,18 +75,28 @@ CSS = """
     font-family: "Source Sans Pro", sans-serif;
 }
 
-.st-emotion-cache-4uzi61 {
-    background-color: white
+.st-emotion-cache-4oy321 {
+    background-color: #FFD8CC50;
 }
 
 .stChatMessage {
-    background-color: #FFD8CC
+    padding-right: 1em;
 }
 
 
-#tabs-bui1-tab-0 {
-
+.st-emotion-cache-4uzi61 {
+    background: white;
+    border: none;
 }
+
+
+.st-emotion-cache-bho8sy {
+    background-color: #1B4C9A;
+
+.st-emotion-cache-1ghhuty {
+    background-color: #EA5B29;
+}
+
 """
 
 st.write(f'<style>{CSS}</style>', unsafe_allow_html=True)
@@ -47,7 +107,7 @@ tab1, tab2 = st.tabs(["Q&A Bot", "Simplifier"])
 with tab1:
     messages = st.container(border=True)
     # API base URL
-    API_URL = "https://wemasomo-app-963445830256.europe-west10.run.app"  # Update when using a different host
+    API_URL = "http://localhost:8000"  # Update when using a different host
 
     messages.chat_message("assistant").write("Hello! \U0001F44B What do you want to talk about today?")
     # Accept user input

@@ -47,24 +47,8 @@ def qa_endpoint(qa_prompt: QAPrompt):
         link = df.iloc[most_similar_index]['link']
 
 
-        # if max_score > 0.25:
         summary = df['summary'].iloc[most_similar_index]
         return {"response": response, "summary": summary, "link": link, "score": max_score}
-        # else:
-        #     # If the model can't generate a response, suggest topics
-        #     topics = [
-        #         {"name": "Cancer", "url": "https://www.wemasomo.com/explore/cancer"},
-        #         {"name": "Male Specific Content", "url": "https://www.wemasomo.com/explore/male%20specific%20content"},
-        #         {"name": "Pregnancy", "url": "https://www.wemasomo.com/explore/pregnancy-guide"},
-        #         {"name": "Contraception", "url": "https://www.wemasomo.com/explore/contraception"},
-        #         {"name": "Menstruation", "url": "https://www.wemasomo.com/explore/menstruation"},
-        #         {"name": "Vaccination", "url": "https://www.wemasomo.com/explore/vaccination"},
-        #         {"name": "Endometriosis", "url": "https://www.wemasomo.com/explore/endometriosis"},
-        #         {"name": "Mpox", "url": "https://www.wemasomo.com/explore/mpox"},
-        #         {"name": "Sexually Transmitted Diseases", "url": "https://www.wemasomo.com/explore/hiv"},
-        #         {"name": "Parenting", "url": "https://www.wemasomo.com/explore/parenting"}
-        #     ]
-        #     return {"message": "We couldn't understand your question... Maybe you want to browse through these topics:", "topics": topics}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
