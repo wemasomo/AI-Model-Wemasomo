@@ -13,42 +13,34 @@ st.title("We!Masomo Health Assistant")
 st.markdown('\U0001F4AC Q&A Bot: ask health questions <br> \U0001F4DA Text Simplifier: make your health texts shorter', unsafe_allow_html=True)
 
 CSS = """
-h1 {
-    color: red;
-}
 .stApp {
-    # background-image: url(https://avatars1.githubusercontent.com/u/9978111?v=4);
-    background-size: cover;
+    background-color: #FFD8CC;
 }
-.stVerticalBlockBorderWrapper{
-    
+
+.st-bw {
+    height: 2.5rem;
+    width: 50%;
 }
+
+.st-emotion-cache-jkfxgf {
+    font-family: "Source Sans Pro", sans-serif;
+}
+
+.st-emotion-cache-4uzi61 {
+    background-color: white
+}
+
+.stChatMessage {
+    background-color: #FFD8CC
+}
+
 
 #tabs-bui1-tab-0 {
 
 }
 """
 
-# st.write(f'<style>{CSS}</style>', unsafe_allow_html=True)
-
-# selected = option_menu(
-#     menu_title=None,  # No menu title
-#     options=["Q&A Bot", "Text Simplifier"],  # Menu options
-#     icons=["chat-heart", "highlighter"],  # Icons for the options
-#     menu_icon="emoji-smile",  # Icon for the menu
-#     default_index=0,  # Default selected option
-#     orientation="horizontal",  # Horizontal orientation
-#     styles={
-#         "icon": {"color": "#1B4C9A", "font-size": "18px"},
-#         "nav-link": {
-#             "font-size": "16px",
-#             "text-align": "center",
-#             "--hover-color": "#FFD8CC",
-#         },
-#         "nav-link-selected": {"background-color": "#EA5B29"},
-#     }
-# )
-
+st.write(f'<style>{CSS}</style>', unsafe_allow_html=True)
 
 tab1, tab2 = st.tabs(["Q&A Bot", "Shortener"])
 
@@ -57,20 +49,6 @@ with tab1:
     messages = st.container(border=True)
     # API base URL
     API_URL = "http://localhost:8000"  # Update when using a different host
-
-    # # Initialize chat history
-    # if "messages" not in st.session_state:
-    #     st.session_state.messages = []
-
-    # # Start chat with Hello
-    # if not st.session_state.messages:
-
-
-    # # Display chat messages from history on app rerun
-    # for message in st.session_state.messages:
-    #     with st.chat_message(message["role"]):
-    #         st.markdown(message["content"])
-
 
     messages.chat_message("assistant").write("Hello! \U0001F44B What do you want to talk about today?")
     # Accept user input
