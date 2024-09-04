@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # API base URL
-API_URL = "http://localhost:8000"  # Update if using a different host or port
+API_URL = "https://wemasomo-app-963445830256.europe-west10.run.app"  # Update if using a different host or port
 
 # Application title
 st.title("We!Masomo Health Assistant")
