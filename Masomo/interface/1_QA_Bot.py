@@ -44,6 +44,7 @@ st.markdown(
                 This tool provides two main features:
                 <br><strong>\U0001F4AC Q&A Bot:</strong> Ask health-related questions and receive instant answers.
                 <br><strong>\U0001F4DA Text Simplifier:</strong> Simplify complex health texts for easier understanding.
+                <br><a href="https://www.wemasomo.com/contact" target="_blank" class="help-button">Need Help?</a>
             </div>
             """,
             unsafe_allow_html=True
@@ -51,11 +52,41 @@ st.markdown(
 
 CSS = """
 
-# .welcome-text {
-#     font-size: 18px;
-#     margin-bottom: 20px;
-#     color: #333;
-# }
+.help-button {
+    background-color: #EA5B29;
+    padding: 0.5em;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 1em;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+
+}
+
+.st-emotion-cache-1rsyhoq a {
+    color: white;
+}
+
+.help-button:hover {
+    background-color: #C94A19;
+}
+
+.welcome-text {
+    background-color: #FFFFFF70;
+    border-radius: 10px;
+    padding: 1em;
+}
+
+h1 {
+    color: #1B4C9A;
+    padding: 0rem 0px 0.5rem;
+}
+
+h4 {
+    color: #EA5B29;
+    padding: 0rem 0px 1rem;
+}
 
 
 div[aria-label="dialog"]>button[aria-label="Close"] {
@@ -63,7 +94,7 @@ div[aria-label="dialog"]>button[aria-label="Close"] {
 }
 
 .stApp {
-    background-color: #FFD8CC;
+    background-color: #FFD8CC80;
 }
 
 .st-bw {
@@ -101,7 +132,7 @@ div[aria-label="dialog"]>button[aria-label="Close"] {
 
 st.write(f'<style>{CSS}</style>', unsafe_allow_html=True)
 
-tab1, tab2 = st.tabs(["Q&A Bot", "Simplifier"])
+tab1, tab2 = st.tabs(["Q&A Bot", "Text Simplifier"])
 
 # Conditional rendering based on selected option
 with tab1:
