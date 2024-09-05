@@ -2,7 +2,7 @@ torch
 transformers
 pandas
 scikit-learn
-
+tensorflow
 
 # API
 fastapi         # API framework

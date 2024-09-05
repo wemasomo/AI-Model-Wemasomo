@@ -7,6 +7,7 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import requests
 
+
 logo_url = "https://www.wemasomo.com/_next/image?url=%2Fimg%2Flogo-text.png&w=384&q=75"
 
 if 'show_welcome' not in st.session_state:
@@ -134,73 +135,60 @@ st.write(f'<style>{CSS}</style>', unsafe_allow_html=True)
 
 tab1, tab2 = st.tabs(["Q&A Bot", "Text Simplifier"])
 
-# Conditional rendering based on selected option
 with tab1:
-    messages = st.container(border=True)
+    messages = st.container()
     # API base URL
-    API_URL = "http://localhost:8000" # Update when using a different host
+    API_URL = "http://localhost:8000"  # Update when using a different host
 
-    messages.chat_message("assistant").write("Hello! \U0001F44B What do you want to talk about today?")
+    messages.chat_message("assistant").write("Hello! 👋 What do you want to talk about today?")
+
     # Accept user input
     if prompt := st.chat_input("What do you want to know more about?"):
         messages.chat_message("user").write(prompt)
-        # Add user message to chat history
-        # st.session_state.messages.append({"role": "user", "content": prompt})
 
-        # # Display user message in chat message container
-        # with st.chat_message("user"):
-        #     st.markdown(prompt)
+        # Prepare headers (though GET doesn't usually need these)
+        headers = {
+            'accept': 'application/json',
+        }
 
-        # Generate and display assistant response in chat message container
-        # with st.chat_message("assistant"):
-        # response_placeholder = st.empty()  # Create a placeholder for the response
-        response = requests.post(f"{API_URL}/qa",  json={"prompt": prompt})
-            # if response.ok:
-            #     answer = response.json().get("answer")
+        # Send the GET request with the query parameter
+        response = requests.get(f"{API_URL}/qa", params={'qa_prompt': prompt}, headers=headers)
 
-
-            ######## IS THIS WHAT I'M SUPPOSED TO DO??? ########
-        if response.json().get('score') > 0.2:
+        # Check the response status
+        if response.ok:
             response_data = response.json()
 
-            # Extract the values from the JSON response
-            response_text = response_data.get('response', '')
-            summary_text = response_data.get('summary', '')
-            link_text = response_data.get('link', '')
+            # Si el puntaje de la respuesta es mayor a 0.2, mostramos la respuesta
+            if response_data.get('score', 0) > 0.2:
+                # Extract the values from the JSON response
+                response_text = response_data.get('response', '')
+                summary_text = response_data.get('summary', '')
+                link_text = response_data.get('link', '')
 
-            # Combine the extracted values into a single string with each on a new line
-            combined_text = f"**Short answer:** {response_text}  \n**On this topic:** {summary_text}  \n[**More info**]({link_text})"
+                # Combine the extracted values into a single string with each on a new line
+                combined_text = f"**Short answer:** {response_text}  \n**On this topic:** {summary_text}  \n[**More info**]({link_text})"
 
-            # Display the combined text in the chat interface
-            messages.chat_message("assistant").markdown(combined_text, unsafe_allow_html=True)
+                # Display the combined text in the chat interface
+                messages.chat_message("assistant").markdown(combined_text, unsafe_allow_html=True)
 
-        else:
-            with messages.chat_message("assistant").container():
-                st.write("We couldn't understand your question... \n Maybe you want to browse through these topics:")
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.link_button("Cancer", "https://www.wemasomo.com/explore/cancer", use_container_width=True)
-                    st.link_button("Contraception", "https://www.wemasomo.com/explore/contraception", use_container_width=True)
-                # with col2:
-                    st.link_button("Endometriosis", "https://www.wemasomo.com/explore/endometriosis", use_container_width=True)
-                    st.link_button("Sexually Transmitted Diseases", "https://www.wemasomo.com/explore/hiv", use_container_width=True)
-                    st.link_button("Male Specific Content", "https://www.wemasomo.com/explore/male%20specific%20content", use_container_width=True)
-                with col2:
-                    st.link_button("Menstruation", "https://www.wemasomo.com/explore/menstruation", use_container_width=True)
-                    st.link_button("Mpox", "https://www.wemasomo.com/explore/mpox", use_container_width=True)
-                    st.link_button("Parenting", "https://www.wemasomo.com/explore/parenting", use_container_width=True)
-                    st.link_button("Pregnancy", "https://www.wemasomo.com/explore/pregnancy-guide", use_container_width=True)
-                    st.link_button("Vaccination", "https://www.wemasomo.com/explore/vaccination", use_container_width=True)
+            # Si el puntaje es menor a 0.2, mostramos el bloque de sugerencias
+            else:
+                with messages.chat_message("assistant").container():
+                    st.write("We couldn't understand your question... \n Maybe you want to browse through these topics:")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.link_button("Cancer", "https://www.wemasomo.com/explore/cancer", use_container_width=True)
+                        st.link_button("Contraception", "https://www.wemasomo.com/explore/contraception", use_container_width=True)
+                        st.link_button("Endometriosis", "https://www.wemasomo.com/explore/endometriosis", use_container_width=True)
+                        st.link_button("Male Specific Content", "https://www.wemasomo.com/explore/male%20specific%20content", use_container_width=True)
+                        st.link_button("Sexually Transmitted Diseases", "https://www.wemasomo.com/explore/hiv", use_container_width=True)
+                    with col2:
+                        st.link_button("Menstruation", "https://www.wemasomo.com/explore/menstruation", use_container_width=True)
+                        st.link_button("Mpox", "https://www.wemasomo.com/explore/mpox", use_container_width=True)
+                        st.link_button("Parenting", "https://www.wemasomo.com/explore/parenting", use_container_width=True)
+                        st.link_button("Pregnancy", "https://www.wemasomo.com/explore/pregnancy-guide", use_container_width=True)
+                        st.link_button("Vaccination", "https://www.wemasomo.com/explore/vaccination", use_container_width=True)
 
-
-            # response = qa_endpoint(prompt)
-            # response_text = ""
-            # for word in response:
-            #     response_text += word
-            #     response_placeholder.markdown(response_text)
-            #     time.sleep(0.05)  # Simulate streaming delay
-
-            # st.session_state.messages.append({"role": "assistant", "content": response})
 
 #################################################################################################
 
@@ -216,20 +204,21 @@ with tab2:
     """)
 
     # User input for the text
-text = summary_box.text_area("Enter your text here")
+    text = summary_box.text_area("Enter your text here")
 
-# Display the "Get Summary" button
-if summary_box.button("Get Summary"):
-    if text:
-        # Send a GET request to the summarization endpoint
-        response = requests.get(f"{API_URL}/summarize", params={"query": text})
-        if response.ok:
-            summary = response.json().get("summary")
-            summary_box.write(summary)
+    # Display the "Get Summary" button
+    if summary_box.button("Get Summary"):
+        if text:
+            # Send a GET request to the summarization endpoint with query parameters
+            response = requests.get(f"{API_URL}/summarize", params={"query": text})
+            if response.ok:
+                summary = response.json().get("summary")
+                summary_box.write(summary)
+            else:
+                summary_box.write("Error retrieving summary.")
         else:
-            summary_box.write("Error retrieving summary.")
-    else:
-        summary_box.markdown("Please enter some text to get a summary.")
+            summary_box.markdown("Please enter some text to get a summary.")
+
 
 
 ####################################################################################3

@@ -1,9 +1,10 @@
-from fastapi import FastAPI, HTTPException  # type: ignore
+from fastapi import FastAPI, HTTPException, Query
 from Masomo.model.summarizer import Summarizer
 from Masomo.model.qa_model import QuestionAnsweringModel
 from Masomo.interface.response_logic import get_index, text_vectors
 import pandas as pd
 from pydantic import BaseModel
+from typing import Optional
 
 app = FastAPI()
 summarizer = Summarizer()
@@ -32,36 +33,28 @@ def summarize_text(query):
 class QAPrompt(BaseModel):
     prompt: str
 
-# API endpoint to handle Q&A
-@app.post("/qa/")
-def qa_endpoint(qa_prompt: QAPrompt):
-    prompt = qa_prompt.prompt
+@app.get("/qa")
+def qa_endpoint(qa_prompt: Optional[str] = Query(None, description="Question to be answered")):
     try:
-        # Generate a response
+        # Verifica que el prompt no esté vacío
+        if not qa_prompt:
+            raise HTTPException(status_code=400, detail="qa_prompt parameter is required")
+
+        # Procesa el prompt y genera una respuesta
+        prompt = qa_prompt
         most_similar_index, max_score = get_index(prompt, text_vectors)
         relevant_text = df.iloc[most_similar_index]['text']
-        print('👩‍🦯',most_similar_index)
-        print('🏌️‍♀️',relevant_text)
-        print('👱‍♀️',max_score)
-        response = qa_model.answer_question(prompt, relevant_text)
         link = df.iloc[most_similar_index]['link']
-
-
         summary = df['summary'].iloc[most_similar_index]
+
+        print('👩‍🦯', most_similar_index)
+        print('🏌️‍♀️', relevant_text)
+        print('👱‍♀️', max_score)
+
+        response = qa_model.answer_question(prompt, relevant_text)
+
+        # Retorna la respuesta, el resumen y el enlace
         return {"response": response, "summary": summary, "link": link, "score": max_score}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-        # if text:
-        #     if st.button("Get Summary"):
-        #         # Send a GET request to the summarization endpoint
-        #         response = requests.get(f"{API_URL}/summarize", params={"query": text})
-        #         if response.ok:
-        #             summary = response.json().get("summary")
-        #             st.write("**Summary:**", summary)
-        #         else:
-        #             st.write("Error retrieving summary.")
-        # else:
-        #     st.markdown("Please enter some text to get a summary.")
