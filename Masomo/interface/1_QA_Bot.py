@@ -107,7 +107,7 @@ tab1, tab2 = st.tabs(["Q&A Bot", "Simplifier"])
 with tab1:
     messages = st.container(border=True)
     # API base URL
-    API_URL = "http://localhost:8000"  # Update when using a different host
+    API_URL = "http://localhost:8000" # Update when using a different host
 
     messages.chat_message("assistant").write("Hello! \U0001F44B What do you want to talk about today?")
     # Accept user input
@@ -177,7 +177,7 @@ with tab2:
     summary_box = st.container()
 
     # API base URL
-    API_URL = "https://wemasomo-app-963445830256.europe-west10.run.app"  # Update when using a different host
+    API_URL = "http://localhost:8000"  # Update when using a different host
 
     # Description
     summary_box.write("""

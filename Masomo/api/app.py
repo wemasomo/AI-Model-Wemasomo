@@ -8,7 +8,7 @@ from pydantic import BaseModel
 app = FastAPI()
 summarizer = Summarizer()
 qa_model = QuestionAnsweringModel()
-df = pd.read_csv('raw_data/database.csv')
+df = pd.read_csv('Masomo/interface/database.csv')
 
 @app.on_event("startup")
 def load_model():
