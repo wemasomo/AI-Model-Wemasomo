@@ -45,16 +45,15 @@ st.markdown(
                 This tool provides two main features:
                 <br><strong>\U0001F4AC Q&A Bot:</strong> Ask health-related questions and receive instant answers.
                 <br><strong>\U0001F4DA Text Simplifier:</strong> Simplify complex health texts for easier understanding.
-                <br><a href="https://www.wemasomo.com/contact" target="_blank" class="help-button">Need Help?</a>
+                <br><a href="https://www.wemasomo.com/contact" target="_blank" class="help-button">Help</a>
             </div>
             """,
             unsafe_allow_html=True
         )
 
 CSS = """
-
 .help-button {
-    background-color: #EA5B29;
+    background-color: #1B4C9A20;
     padding: 0.5em;
     border-radius: 10px;
     text-align: center;
@@ -62,74 +61,57 @@ CSS = """
     cursor: pointer;
     text-decoration: none;
     display: inline-block;
-
 }
-
 .st-emotion-cache-1rsyhoq a {
-    color: white;
+    color: #1B4C9A;
 }
-
 .help-button:hover {
-    background-color: #C94A19;
+    background-color: #C94A1960;
 }
-
 .welcome-text {
     background-color: #FFFFFF70;
     border-radius: 10px;
     padding: 1em;
 }
-
 h1 {
     color: #1B4C9A;
     padding: 0rem 0px 0.5rem;
 }
-
 h4 {
     color: #EA5B29;
     padding: 0rem 0px 1rem;
 }
-
-
 div[aria-label="dialog"]>button[aria-label="Close"] {
         display: none;
 }
-
 .stApp {
     background-color: #FFD8CC80;
 }
-
 .st-bw {
     height: 2.5rem;
     width: 50%;
 }
-
 .st-emotion-cache-jkfxgf {
     font-family: "Source Sans Pro", sans-serif;
 }
-
 .st-emotion-cache-4oy321 {
     background-color: #FFD8CC50;
 }
-
 .stChatMessage {
     padding-right: 1em;
 }
-
-
 .st-emotion-cache-4uzi61 {
     background: white;
     border: none;
 }
-
-
 .st-emotion-cache-bho8sy {
     background-color: #1B4C9A;
-
 .st-emotion-cache-1ghhuty {
     background-color: #EA5B29;
 }
 
 """
+
 
 st.write(f'<style>{CSS}</style>', unsafe_allow_html=True)
 
@@ -138,7 +120,7 @@ tab1, tab2 = st.tabs(["Q&A Bot", "Text Simplifier"])
 with tab1:
     messages = st.container()
     # API base URL
-    API_URL = "http://localhost:8000"  # Update when using a different host
+    API_URL = "https://wemasomo-app-963445830256.europe-west10.run.app"  # Update when using a different host
 
     messages.chat_message("assistant").write("Hello! 👋 What do you want to talk about today?")
 
@@ -196,7 +178,7 @@ with tab2:
     summary_box = st.container()
 
     # API base URL
-    API_URL = "http://localhost:8000"  # Update when using a different host
+    API_URL = "https://wemasomo-app-963445830256.europe-west10.run.app"  # Update when using a different host
 
     # Description
     summary_box.write("""
